@@ -81,6 +81,9 @@
   <ItemGroup>
     <ClCompile Include="compression.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lz.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
