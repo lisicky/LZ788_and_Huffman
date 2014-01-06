@@ -8,5 +8,11 @@ enum returnCode
 	not_enough_memory
 };
 
+typedef struct dictionaryElem
+{
+	char elem;
+	short n;
+};
+
 returnCode lz78_encode(FILE in, FILE out);
 returnCode lz78_decode(FILE in, FILE out);
