@@ -11,8 +11,9 @@ enum returnCode
 typedef struct dictionaryElem
 {
 	char elem;
-	short n;
+	unsigned short n;
 };
 
 returnCode lz78_encode(FILE in, FILE out);
 returnCode lz78_decode(FILE in, FILE out);
+int findInDictionary(dictionaryElem* dictionary,unsigned short lenght, char elem);
