@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="compression.cpp" />
+    <ClCompile Include="lz.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lz.h" />

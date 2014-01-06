@@ -21,6 +21,9 @@
     <ClCompile Include="compression.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lz.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lz.h">
