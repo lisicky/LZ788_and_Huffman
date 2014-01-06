@@ -14,6 +14,6 @@ typedef struct dictionaryElem
 	unsigned short n;
 }dictionaryElem;
 
-returnCode lz78_encode(FILE in, FILE out);
-returnCode lz78_decode(FILE in, FILE out);
+returnCode lz78_encode(FILE* in, FILE* out);
+returnCode lz78_decode(FILE* in, FILE* out);
 unsigned short findInDictionary(dictionaryElem* dictionary,unsigned short length,unsigned short startIndex, char elem);
