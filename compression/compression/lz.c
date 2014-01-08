@@ -15,12 +15,8 @@ unsigned short findInDictionary(dictionaryElem* dictionary,int length,unsigned s
 	for(i=startIndex;i<length;i++)
 	{
 		if(dictionary[i].elem==elem)
-			if(startIndex==i)
-				continue;
-			else
-			{
+			
 				return i;
-			}
 			
 	}
 	return 0;
@@ -28,7 +24,7 @@ unsigned short findInDictionary(dictionaryElem* dictionary,int length,unsigned s
 
 returnCode lz78_encode(FILE* in, FILE* out)
 {
-	unsigned short n=1;
+	unsigned short n=0,prepreviousN=0;
 	int dictionaryLength=1;
 	int countOfRead;
 	int countOfWrited;
@@ -54,13 +50,21 @@ returnCode lz78_encode(FILE* in, FILE* out)
 	for(i=0;i<countOfRead;i++)
 	{
 		elem=buff[i];
-		n=findInDictionary(dictionary,dictionaryLength,n,elem);
+		do
+		{
+		n=findInDictionary(dictionary,dictionaryLength,n+1,elem);
+		} while ((dictionary[n].n!=prepreviousN)&&(n!=0));
 		if(n==0)
 		{
 			dictionary[dictionaryLength].elem=elem;
-			dictionary[dictionaryLength].n=n;
+			dictionary[dictionaryLength].n=prepreviousN;
 			dictionaryLength++;
-			n=1;
+			n=0;
+			prepreviousN=0;
+		}
+		else
+		{
+			prepreviousN=n;
 		}
 		if(dictionaryLength==USHRT_MAX)
 			{
@@ -68,9 +72,18 @@ returnCode lz78_encode(FILE* in, FILE* out)
 			if (countOfWrited!=(sizeof(dictionaryElem)*dictionaryLength))
 				write_error;
 			dictionaryLength=1;
-			n=1;
+			n=0;
 			
 		}
+	}
+	if((prepreviousN==n!=0)&&(feof(in)))
+	{
+		dictionary[dictionaryLength].elem=elem;
+			dictionary[dictionaryLength].n=prepreviousN;
+			dictionaryLength++;
+			n=0;
+			prepreviousN=0;
+
 	}
 	if ((dictionaryLength<USHRT_MAX)&&(feof(in)))
 		{
@@ -78,7 +91,7 @@ returnCode lz78_encode(FILE* in, FILE* out)
 			if (countOfWrited!=(sizeof(dictionaryElem)*dictionaryLength))
 				write_error;
 			dictionaryLength=1;
-			n=1;
+			n=0;
 			
 		}
 	}
