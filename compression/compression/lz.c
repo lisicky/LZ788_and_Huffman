@@ -86,3 +86,71 @@ returnCode lz78_encode(FILE* in, FILE* out)
 	return complete;
 
 }
+
+
+returnCode lz78_decode(FILE* in, FILE* out)
+{
+	unsigned short n;
+	int writedInBuff=0;
+	int countOfRead;
+	int countOfWrited;
+	int stringLength=0;
+	int i,j;
+	char elem;
+	char* buff;
+	dictionaryElem* dictionary;
+	if(in==NULL)
+		return read_error;
+	if(out==NULL)
+		return write_error;
+	buff= (char*)malloc(sizeof(char)*BUFSIZ);
+	dictionary=(dictionaryElem*)malloc(sizeof(dictionaryElem)*USHRT_MAX);
+	if ((buff==NULL)||(dictionary==NULL))
+		return not_enough_memory;
+	do
+	{
+		countOfRead=fread(dictionary,sizeof(dictionaryElem),USHRT_MAX,in);
+		
+		if(ferror(in))
+			return read_error;
+		for(i=1;i<countOfRead;i++)
+		{
+			stringLength=0;
+			n=i;
+				while(n!=0)
+				{
+					n=dictionary[n].n;
+					stringLength++;
+				}
+				while (stringLength>0)
+				{
+					n=i;
+					for(j=0;j<stringLength;j++)
+					{
+						elem=dictionary[n].elem;
+						n=dictionary[n].n;
+					}
+					stringLength--;
+					buff[writedInBuff]=elem;
+					writedInBuff++;
+					if(writedInBuff==BUFSIZ)
+					{
+						countOfWrited=fwrite(buff,sizeof(char),writedInBuff,out);
+						if(countOfWrited!=writedInBuff)
+							return write_error;
+						writedInBuff=0;
+					}
+				}
+		}
+		if(feof(in)&&(writedInBuff<BUFSIZ))
+		{
+						countOfWrited=fwrite(buff,sizeof(char),writedInBuff,out);
+						if(countOfWrited!=writedInBuff)
+							return write_error;
+						writedInBuff=0;
+						
+		}
+	}while(!feof(in));
+	return complete;
+
+}
