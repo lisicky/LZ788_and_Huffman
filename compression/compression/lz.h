@@ -1,5 +1,6 @@
 #include <stdio.h>
-
+#ifndef LZ_H
+#define LZ_H
 typedef enum returnCode
 {
 	complete,
@@ -18,3 +19,4 @@ typedef struct dictionaryElem
 returnCode lz78_encode(FILE* in, FILE* out);
 returnCode lz78_decode(FILE* in, FILE* out);
 unsigned short findInDictionary(dictionaryElem* dictionary,int length,unsigned short startIndex, char elem);
+#endif 
