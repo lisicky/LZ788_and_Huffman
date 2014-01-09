@@ -79,7 +79,7 @@ returnCode lz78_encode(FILE* in, FILE* out)
 	if((prepreviousN==n!=0)&&(feof(in)))
 	{
 		dictionary[dictionaryLength].elem=elem;
-			dictionary[dictionaryLength].n=prepreviousN;
+		dictionary[dictionaryLength].n=dictionary[prepreviousN].n;
 			dictionaryLength++;
 			n=0;
 			prepreviousN=0;
