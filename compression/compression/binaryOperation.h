@@ -31,8 +31,8 @@ typedef struct dictionaryOfBitsElem
 }dictionaryOfBitsElem;
 
 int addBit (char bit, bits* bitsArray);
-bits findCode(char character, dictionaryOfBitsElem dictionary);
-bits catBinArr(bits* bitsArrayOne, bits* bitsArrayTwo);
+bits* findCode(char character, dictionaryOfBitsElem* dictionary,int len);
+void catBinArr(bits* bitsArrayOne, bits* bitsArrayTwo);
 char getBit(int number, bits bitsArray);
 bits stringToBits(char* stringOfBits);
-bits cutAndGetResidue(bits* arrayOfBits, int countByteToCut);
+bits* cutAndGetResidue(bits* arrayOfBits, int countByteToCut);

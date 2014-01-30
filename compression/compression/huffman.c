@@ -51,15 +51,17 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 		if(ferror(in))
 			return read_error;
 		for (i=0;i<countOfRead;i++)
-			j=buff[i];
+		{
+			j=(unsigned char)buff[i];
 			dictionary[j].probability++;
+		}
 	}
 	fseek(in,oldPosition,SEEK_SET);
 	qsort(dictionary,length,sizeof(dictionaryElem),compare);
 	j=0;
 	for(i=0;i<length;i++)
 	{
-		if(dictionary->probability==0)
+		if(dictionary[0].probability==0)
 		{
 			dictionary++;
 			j++;
@@ -89,6 +91,11 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 		return not_enough_memory;
 	}
 	createDictionaryOfBits(root,code,dictionaryOfBits,&lengthOfBinaryDictionary);
+	
+	destroyTree(&root);
+	free(memoryBlockForDictionary);
+	free(buff);
+	free(dictionaryOfBits);
 	return complete;
 }
 
@@ -97,12 +104,13 @@ node* createTree(dictionaryElem* dictionary, int length)
 	int i,j;
 	node* newNode;
 	node **nodes;
-	nodes=(node**)malloc(sizeof(node*));
+	nodes=(node**)malloc(sizeof(node*)*length);
 	if(nodes==NULL)
 		return NULL;
 	for (i=0;i<length;i++)
 	{
-		nodes[i]=(node*)malloc(sizeof(node));
+		newNode=(node*)malloc(sizeof(node));
+		nodes[i]=newNode;
 		if(nodes[i]==NULL)
 		{
 			for(j=0;j<i;j++)
