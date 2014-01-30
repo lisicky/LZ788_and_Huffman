@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef enum returnCode
 {
@@ -6,46 +7,48 @@ typedef enum returnCode
 	read_error,
 	write_error,
 	not_enough_memory
-};
+}returnCode;
 
 typedef union blockOfBits
 {
 	char block;
 	struct elements
 	{
-		int bitOne:1;
-		int bitTwo:1;
-		int bitThree:1;
-		int bitFour:1;
-		int bitFive:1;
-		int bitSix:1;
-		int bitSeven:1;
-		int bitEight:1;
+		unsigned bit1:1;
+        unsigned bit2:1;
+        unsigned bit3:1;
+        unsigned bit4:1;
+        unsigned bit5:1;
+        unsigned bit6:1;
+        unsigned bit7:1;
+        unsigned bit8:1; 
 	};
-}; 
+}blockOfBits; 
 
 typedef struct dictionaryElem
 {
-	double probability;
+	int probability;
 	char elem;
-}dictioinaryElem;
+}dictionaryElem;
 
 
-typedef struct dictionaryOfBits
+typedef struct dictionaryOfBitsElem
 {
 	blockOfBits bits;
 	short countBits;
 	char elem;
-}dictioinaryElem;
+}dictionaryOfBitsElem;
 
-typedef struct treeElem
+typedef struct Node
 {
 	char charater;
-	treeElem* zero;
-	treeElem* one;
-}treeElem;
+	int probability;
+	struct Node *zero;
+	struct Node *one;
+}node;
 
 returnCode huffman_encode(FILE *in ,FILE *out);
 returnCode huffman_decode(FILE *in,FILE *out);
-void sortDictionary(dictionaryElem* dictionary, int length);
-treeElem* createTree(dictionaryElem* dictionaty, int length);
+void destroyTree(node** root);
+dictionaryOfBitsElem* createDictionaryOfBits(node* root);
+node* createTree(dictionaryElem* dictionaty, int length);
