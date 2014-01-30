@@ -19,9 +19,12 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 	int lengthOfBinaryDictionary=0;
 	int countOfRead;
 	long oldPosition;
-	long int countOfWritedBits;
+	int countOfWrite;
 	char* buff;
 	char* code="";
+	bits buffOfBits;
+	bits* binCode;
+	bits residueBinCode;
 	dictionaryElem *dictionary, *memoryBlockForDictionary;
 	dictionaryOfBitsElem* dictionaryOfBits;
 	node* root;
@@ -91,7 +94,73 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 		return not_enough_memory;
 	}
 	createDictionaryOfBits(root,code,dictionaryOfBits,&lengthOfBinaryDictionary);
-	
+	if(lengthOfBinaryDictionary==0)
+	{
+		destroyTree(&root);
+		free(memoryBlockForDictionary);
+		free(buff);
+		free(dictionaryOfBits);
+		return complete;
+	}
+	fwrite(&length,4,1,out);
+	countOfWrite=fwrite(dictionary,sizeof(dictionaryElem),length,out);
+	if((countOfWrite!=length)||ferror(out))
+	{
+		destroyTree(&root);
+		free(memoryBlockForDictionary);
+		free(buff);
+		free(dictionaryOfBits);
+		return write_error;
+	}
+	buffOfBits.countBits=0;
+	buffOfBits.arrayOfBits=NULL;
+	while (!feof(in))
+	{
+		countOfRead=fread_s(buff,BUFSIZ,sizeof(char),BUFSIZ,in);
+		if(ferror(in))
+			return read_error;
+		for(i=0;i<countOfRead;i++)
+		{
+			binCode=findCode(buff[i],dictionaryOfBits,lengthOfBinaryDictionary);
+			catBinArr(&buffOfBits,binCode);
+			if((buffOfBits.countBits/8)>=BUFSIZ)
+			{
+				if((buffOfBits.countBits/8)>BUFSIZ)
+				{
+					residueBinCode=cutAndGetResidue(&buffOfBits,BUFSIZ);
+					fwrite(buffOfBits.arrayOfBits,sizeof(blockOfBits),BUFSIZ,out);
+					if(ferror(out))
+						return write_error;
+					buffOfBits.countBits=0;
+					free(buffOfBits.arrayOfBits);
+					buffOfBits.arrayOfBits=NULL;
+					catBinArr(&buffOfBits,&residueBinCode);
+					free(residueBinCode.arrayOfBits);
+					residueBinCode.arrayOfBits=NULL;
+
+				}
+				else
+				{
+					fwrite(buffOfBits.arrayOfBits,sizeof(blockOfBits),BUFSIZ,out);
+					if(ferror(out))
+						return write_error;
+					buffOfBits.countBits=0;
+					free(buffOfBits.arrayOfBits);
+					buffOfBits.arrayOfBits=NULL;
+				}
+			}
+		}
+		if(buffOfBits.countBits!=0)
+		{
+			fwrite(buffOfBits.arrayOfBits,sizeof(blockOfBits),(buffOfBits.countBits/8)+((buffOfBits.countBits%8)!=0?1:0),out);
+					if(ferror(out))
+						return write_error;
+			buffOfBits.countBits=0;
+			free(buffOfBits.arrayOfBits);
+			buffOfBits.arrayOfBits=NULL;
+		}
+	}
+
 	destroyTree(&root);
 	free(memoryBlockForDictionary);
 	free(buff);

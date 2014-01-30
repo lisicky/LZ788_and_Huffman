@@ -1,5 +1,6 @@
-#define END_STRING_OF_BITS '2'
-
+#ifndef BIT_OPERATION_H
+#define BIT_OPERATION_H
+#pragma pack (push, 1)
 typedef struct eightBits
 	{
 		unsigned bit1:1;
@@ -10,14 +11,14 @@ typedef struct eightBits
         unsigned bit6:1;
         unsigned bit7:1;	
         unsigned bit8:1; 
-	}eightBits;
+	};
 
 typedef union blockOfBits
-{
+{   
 	char block;
-	eightBits elements;
+	struct eightBits elements;
 }blockOfBits; 
-
+#pragma pack (pop)
 typedef struct bits
 {
 	int countBits;
@@ -35,4 +36,5 @@ bits* findCode(char character, dictionaryOfBitsElem* dictionary,int len);
 void catBinArr(bits* bitsArrayOne, bits* bitsArrayTwo);
 char getBit(int number, bits bitsArray);
 bits stringToBits(char* stringOfBits);
-bits* cutAndGetResidue(bits* arrayOfBits, int countByteToCut);
+bits cutAndGetResidue(bits* arrayOfBits, int countByteToCut);
+#endif

@@ -167,25 +167,27 @@ void catBinArr(bits* bitsArrayOne, bits* bitsArrayTwo)
 	}
 }
 
-bits* cutAndGetResidue(bits* arrayOfBits, int countByteToCut)
+bits cutAndGetResidue(bits* arrayOfBits, int countByteToCut)
 {
-	bits* arrayOfBitsReside;
+	bits arrayOfBitsReside;
 	int residue;
 	int len;
 	int i,j;
-	arrayOfBitsReside=(bits*)malloc(sizeof(bits));
 	len=arrayOfBits->countBits-(countByteToCut*8);
 	arrayOfBits->countBits-=len;
+	arrayOfBitsReside.countBits=0;
+	arrayOfBitsReside.arrayOfBits=NULL;
 	if(len<=0)
-		return NULL;
+		return arrayOfBitsReside;
 	residue = len%8;
-	arrayOfBitsReside->arrayOfBits=(blockOfBits*)malloc(sizeof(blockOfBits)*((len/8)+residue==0?0:1));
-	if(arrayOfBitsReside->arrayOfBits==NULL)
-		return NULL;
+	arrayOfBitsReside.arrayOfBits=(blockOfBits*)malloc(sizeof(blockOfBits)*((len/8)+residue==0?0:1));
+	if(arrayOfBitsReside.arrayOfBits==NULL)
+		return arrayOfBitsReside;
+	arrayOfBitsReside.countBits=len;
 	i=(arrayOfBits->countBits/8);
-	for(j=0;i<((arrayOfBits->countBits+len)/8)+residue==0?0:1;i++,j++)
+	for(j=0;i<((arrayOfBits->countBits+len)/8)+(residue==0?0:1)-1;i++,j++)
 	{
-		arrayOfBitsReside->arrayOfBits[j].block=arrayOfBits->arrayOfBits[i].block;
+		arrayOfBitsReside.arrayOfBits[j].block=arrayOfBits->arrayOfBits[i].block;
 	}
 	return arrayOfBitsReside;
 }
