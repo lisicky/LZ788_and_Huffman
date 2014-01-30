@@ -56,16 +56,16 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 		if(dictionary->probability==0)
 		{
 			dictionary++;
-			length--;
 		}
 		else
 		{
+
 			break;
 		}
 	}
+	length-=i;
 	if(length==0)
 		return complete;
-    
 	root=createTree(dictionary,length);
 //	dictionaryOfBits = createDictionaryOfBits(root);
 }
@@ -74,9 +74,8 @@ node* createTree(dictionaryElem* dictionary, int length)
 {
 	int i,j;
 	node* newNode;
-	node **nodes, **memoryBlockForNodes;
-	memoryBlockForNodes=(node**)malloc(sizeof(node*));
-	nodes=memoryBlockForNodes;
+	node **nodes;
+	nodes=(node**)malloc(sizeof(node*));
 	if(nodes==NULL)
 		return NULL;
 	for (i=0;i<length;i++)
@@ -88,11 +87,11 @@ node* createTree(dictionaryElem* dictionary, int length)
 			{
 				destroyTree(&nodes[j]);
 			}
-			free(memoryBlockForNodes);
+			free(nodes);
 			return NULL;
 		}
-		nodes[i]->charater=dictionary->elem;
-		nodes[i]->probability=dictionary->probability;
+		nodes[i]->charater=dictionary[i].elem;
+		nodes[i]->probability=dictionary[i].probability;
 		nodes[i]->one=NULL;
 		nodes[i]->zero=NULL;
 	}
@@ -105,7 +104,7 @@ node* createTree(dictionaryElem* dictionary, int length)
 			{
 				destroyTree(&nodes[i]);
 			}
-			free(memoryBlockForNodes);
+			free(nodes);
 			return NULL;
 		}
 		newNode->probability=nodes[0]->probability+nodes[1]->probability;
@@ -116,9 +115,7 @@ node* createTree(dictionaryElem* dictionary, int length)
 		length--;
 		qsort(nodes,length,sizeof(node*),compareNode);
 	}
-	newNode=nodes[0];
-	free(memoryBlockForNodes);
-	return newNode;
+	return nodes[0];
 }
 
 void destroyTree(node** root)

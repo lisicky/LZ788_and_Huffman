@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "binaryOperation.h"
 
 typedef enum returnCode
 {
@@ -9,35 +10,11 @@ typedef enum returnCode
 	not_enough_memory
 }returnCode;
 
-typedef union blockOfBits
-{
-	char block;
-	struct elements
-	{
-		unsigned bit1:1;
-        unsigned bit2:1;
-        unsigned bit3:1;
-        unsigned bit4:1;
-        unsigned bit5:1;
-        unsigned bit6:1;
-        unsigned bit7:1;
-        unsigned bit8:1; 
-	};
-}blockOfBits; 
-
 typedef struct dictionaryElem
 {
 	int probability;
 	char elem;
 }dictionaryElem;
-
-
-typedef struct dictionaryOfBitsElem
-{
-	blockOfBits bits;
-	short countBits;
-	char elem;
-}dictionaryOfBitsElem;
 
 typedef struct Node
 {

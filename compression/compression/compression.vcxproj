@@ -80,10 +80,12 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="binaryOperation.c" />
     <ClCompile Include="compression.cpp" />
     <ClCompile Include="huffman.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="binaryOperation.h" />
     <ClInclude Include="huffman.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
