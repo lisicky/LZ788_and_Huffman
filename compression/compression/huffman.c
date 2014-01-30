@@ -1,3 +1,4 @@
+#include <string.h>
 #include "huffman.h"
 #define DICTIONARY_LENGTH 256
 
@@ -15,10 +16,13 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 {
 	int i,j;
 	int length = DICTIONARY_LENGTH;
+	int lengthOfBinaryDictionary=0;
 	int countOfRead;
 	long oldPosition;
-	dictionaryElem *dictionary, *memoryBlockForDictionary;
+	long int countOfWritedBits;
 	char* buff;
+	char* code="";
+	dictionaryElem *dictionary, *memoryBlockForDictionary;
 	dictionaryOfBitsElem* dictionaryOfBits;
 	node* root;
 	if(in==NULL)
@@ -43,19 +47,22 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 	oldPosition = ftell(in);
 	while(!feof(in))
 	{
-		countOfRead= fread_s(buff,BUFSIZ,sizeof(char),BUFSIZ,in);
+		countOfRead=fread_s(buff,BUFSIZ,sizeof(char),BUFSIZ,in);
 		if(ferror(in))
 			return read_error;
 		for (i=0;i<countOfRead;i++)
-			dictionary[buff[i]].probability++;
+			j=buff[i];
+			dictionary[j].probability++;
 	}
 	fseek(in,oldPosition,SEEK_SET);
 	qsort(dictionary,length,sizeof(dictionaryElem),compare);
+	j=0;
 	for(i=0;i<length;i++)
 	{
 		if(dictionary->probability==0)
 		{
 			dictionary++;
+			j++;
 		}
 		else
 		{
@@ -63,11 +70,26 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 			break;
 		}
 	}
-	length-=i;
+	length-=j;
 	if(length==0)
 		return complete;
 	root=createTree(dictionary,length);
-//	dictionaryOfBits = createDictionaryOfBits(root);
+	if(root==NULL)
+	{
+		free(memoryBlockForDictionary);
+		free(buff);
+		return not_enough_memory;
+	}
+	dictionaryOfBits =(dictionaryOfBitsElem*)malloc(sizeof(dictionaryOfBitsElem)*length);
+	if(dictionaryOfBits==NULL)
+	{
+		free(memoryBlockForDictionary);
+		free(buff);
+		destroyTree(&root);
+		return not_enough_memory;
+	}
+	createDictionaryOfBits(root,code,dictionaryOfBits,&lengthOfBinaryDictionary);
+	return complete;
 }
 
 node* createTree(dictionaryElem* dictionary, int length)
@@ -132,4 +154,26 @@ void destroyTree(node** root)
 	}
 	free(root[0]);
 	}
+}
+
+void createDictionaryOfBits(node* root,char* code,dictionaryOfBitsElem* dictionaryOfBits, int* length)
+{
+	if((root->zero == NULL) && (root->one== NULL))
+	{
+		dictionaryOfBits[*length].elem=root->charater;
+		dictionaryOfBits[*length].code=stringToBits(code);
+	(*length)++;
+	}
+if(root->zero!= NULL){
+    char temp[256];
+    strcpy(temp, code);
+    strcat(temp, "0");
+	createDictionaryOfBits(root->zero, temp,dictionaryOfBits,length);
+}
+if(root->one!= NULL){
+    char temp[256];
+    strcpy(temp, code);
+    strcat(temp, "1");
+	createDictionaryOfBits(root->one,temp ,dictionaryOfBits,length);
+}
 }

@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "binaryOperation.h"
-
+#ifndef HUFFMAN_H
+#define HUFFMAN_H
 typedef enum returnCode
 {
 	complete,
@@ -27,5 +28,6 @@ typedef struct Node
 returnCode huffman_encode(FILE *in ,FILE *out);
 returnCode huffman_decode(FILE *in,FILE *out);
 void destroyTree(node** root);
-dictionaryOfBitsElem* createDictionaryOfBits(node* root);
+void createDictionaryOfBits(node* root,char* code,dictionaryOfBitsElem* dictionaryOfBits, int* length);
 node* createTree(dictionaryElem* dictionaty, int length);
+#endif

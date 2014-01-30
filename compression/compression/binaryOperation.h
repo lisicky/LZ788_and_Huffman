@@ -1,8 +1,6 @@
 #define END_STRING_OF_BITS '2'
-typedef union blockOfBits
-{
-	char block;
-	struct elements
+
+typedef struct eightBits
 	{
 		unsigned bit1:1;
         unsigned bit2:1;
@@ -12,12 +10,17 @@ typedef union blockOfBits
         unsigned bit6:1;
         unsigned bit7:1;	
         unsigned bit8:1; 
-	};
+	}eightBits;
+
+typedef union blockOfBits
+{
+	char block;
+	eightBits elements;
 }blockOfBits; 
 
 typedef struct bits
 {
-	short countBits;
+	int countBits;
 	blockOfBits* arrayOfBits;
 }bits;
 
@@ -27,8 +30,9 @@ typedef struct dictionaryOfBitsElem
 	char elem;
 }dictionaryOfBitsElem;
 
-int addBit (char bit, bits bitsArray);
-bits findCode(char character);
-bits concatenateBitsArray(bits bitsArrayOne, bits bitsArrayTwo);
-char getBit(short number, bits bitsArray);
-bits stringToBits(char stringOfBits);
+int addBit (char bit, bits* bitsArray);
+bits findCode(char character, dictionaryOfBitsElem dictionary);
+bits catBinArr(bits* bitsArrayOne, bits* bitsArrayTwo);
+char getBit(int number, bits bitsArray);
+bits stringToBits(char* stringOfBits);
+bits cutAndGetResidue(bits* arrayOfBits, int countByteToCut);
