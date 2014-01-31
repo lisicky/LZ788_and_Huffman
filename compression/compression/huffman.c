@@ -230,18 +230,19 @@ returnCode huffman_decode(FILE *in,FILE *out)
 			bit=getBit(i+1,buffOfRead);
 			if(bit=='1')
 			{
-				if(nextNode->one!=NULL)
+				if((nextNode->one!=NULL)&&(nextNode->zero!=NULL))
 				{
 					nextNode=nextNode->one;
 					continue;
 				}
 				else
 				{
-					if((nextNode->zero==NULL))
+					if((nextNode->zero==NULL)&&(nextNode->one==NULL))
 					{
 						buffOfWrite[fillingOfBuffer]=nextNode->charater;
 						fillingOfBuffer++;	
 						nextNode=root;
+						i--;
 						if(fillingOfBuffer==BUFSIZ)
 						{
 							fwrite(buffOfWrite,sizeof(char),BUFSIZ,out);
@@ -258,6 +259,8 @@ returnCode huffman_decode(FILE *in,FILE *out)
 					}
 					else
 					{
+						if(feof(in))
+							break;
 						free(buffOfRead.arrayOfBits);
 						free(buffOfWrite);
 						free(dictionary);
@@ -268,18 +271,19 @@ returnCode huffman_decode(FILE *in,FILE *out)
 			}
 			if(bit=='0')
 			{
-				if((nextNode->zero!=NULL))
+				if((nextNode->one!=NULL)&&(nextNode->zero!=NULL))
 				{
 					nextNode=nextNode->zero;
 					continue;
 				}
 				else
 				{
-					if(nextNode->one==NULL)
+					if((nextNode->zero==NULL)&&(nextNode->one==NULL))
 					{
 						buffOfWrite[fillingOfBuffer]=nextNode->charater;
 						fillingOfBuffer++;	
 						nextNode=root;
+						i--;
 						if(fillingOfBuffer==BUFSIZ)
 						{
 							fwrite(buffOfWrite,sizeof(char),BUFSIZ,out);
@@ -296,6 +300,8 @@ returnCode huffman_decode(FILE *in,FILE *out)
 					}
 					else
 					{
+						if(feof(in))
+							break;
 						free(buffOfRead.arrayOfBits);
 						free(buffOfWrite);
 						free(dictionary);
@@ -305,6 +311,7 @@ returnCode huffman_decode(FILE *in,FILE *out)
 				}
 			}
 		}
+	}
 		if((fillingOfBuffer>0)&&(feof(in)))
 		{
 			fwrite(buffOfWrite,sizeof(char),fillingOfBuffer,out);
@@ -318,7 +325,6 @@ returnCode huffman_decode(FILE *in,FILE *out)
 				return write_error;
 			}
 		}
-	}
 	free(buffOfRead.arrayOfBits);
 	free(buffOfWrite);
 	free(dictionary);
