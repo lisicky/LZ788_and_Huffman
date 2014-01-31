@@ -21,12 +21,26 @@
     <ClCompile Include="compression.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="lz.c">
+=======
+    <ClCompile Include="huffman.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="binaryOperation.c">
+>>>>>>> origin/Huffman
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <ClInclude Include="lz.h">
+=======
+    <ClInclude Include="huffman.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="binaryOperation.h">
+>>>>>>> origin/Huffman
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
