@@ -184,11 +184,11 @@ bits cutAndGetResidue(bits* arrayOfBits, int countByteToCut)
 	bits arrayOfBitsReside;
 	int residue;
 	int len;
-	int i,j;
+	int i;
 	char bit;
-	len=arrayOfBits->countBits-(countByteToCut*8);
 	arrayOfBitsReside.countBits=0;
 	arrayOfBitsReside.arrayOfBits=NULL;
+	len=arrayOfBits->countBits-(countByteToCut*8);
 	if(len<=0)
 		return arrayOfBitsReside;
 	residue = len%8;
