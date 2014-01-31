@@ -3,14 +3,14 @@
 #pragma pack (push, 1)
 typedef struct eightBits
 	{
-		unsigned bit1:1;
-        unsigned bit2:1;
-        unsigned bit3:1;
-        unsigned bit4:1;
-        unsigned bit5:1;
-        unsigned bit6:1;
-        unsigned bit7:1;	
-        unsigned bit8:1; 
+		unsigned char bit1:1;
+        unsigned char bit2:1;
+        unsigned char bit3:1;
+        unsigned char bit4:1;
+        unsigned char bit5:1;
+        unsigned char bit6:1;
+        unsigned char bit7:1;	
+        unsigned char bit8:1; 
 	};
 
 typedef union blockOfBits
