@@ -53,7 +53,10 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 	{
 		countOfRead=fread_s(buff,BUFSIZ,sizeof(char),BUFSIZ,in);
 		if(ferror(in))
+		{
+			free(memoryBlockForDictionary);
 			return read_error;
+		}
 		for (i=0;i<countOfRead;i++)
 		{
 			j=(unsigned char)buff[i];
@@ -138,6 +141,7 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 					catBinArr(&buffOfBits,&residueBinCode);
 					free(residueBinCode.arrayOfBits);
 					residueBinCode.arrayOfBits=NULL;
+					residueBinCode.countBits=0;
 
 				}
 				else
