@@ -82,18 +82,13 @@
   <ItemGroup>
     <ClCompile Include="binaryOperation.c" />
     <ClCompile Include="compression.cpp" />
-<<<<<<< HEAD
     <ClCompile Include="lz.c" />
+	  <ClCompile Include="huffman.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lz.h" />
-=======
-    <ClCompile Include="huffman.c" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="binaryOperation.h" />
     <ClInclude Include="huffman.h" />
->>>>>>> origin/Huffman
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
