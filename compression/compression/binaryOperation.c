@@ -1,6 +1,7 @@
 #include "binaryOperation.h"
 #include <string.h>
 #include <malloc.h>
+#include <stdio.h>
 bits stringToBits(char* stringOfBits)
 {
 	int i;
@@ -18,8 +19,8 @@ bits stringToBits(char* stringOfBits)
 			bitsArray.arrayOfBits=NULL;
 		}
 	}
-		bitsArray.countBits=len;
-		return bitsArray;
+	bitsArray.countBits=len;
+	return bitsArray;
 
 }
 
@@ -47,23 +48,23 @@ int addBit (char bit, bits *bitsArray)
 	}
 	if((residue)!=0)
 	{
-	switch (residue)
-	{
+		switch (residue)
+		{
 		case 1:
-			bitsArray->arrayOfBits[bitsArray->countBits/8].elements.bit8=convertedBit;bitsArray->countBits++;break;
-		case 2:
 			bitsArray->arrayOfBits[bitsArray->countBits/8].elements.bit7=convertedBit;bitsArray->countBits++;break;
-		case 3:
+		case 2:
 			bitsArray->arrayOfBits[bitsArray->countBits/8].elements.bit6=convertedBit;bitsArray->countBits++;break;
-		case 4:
+		case 3:
 			bitsArray->arrayOfBits[bitsArray->countBits/8].elements.bit5=convertedBit;bitsArray->countBits++;break;
-		case 5:
+		case 4:
 			bitsArray->arrayOfBits[bitsArray->countBits/8].elements.bit4=convertedBit;bitsArray->countBits++;break;
-		case 6:
+		case 5:
 			bitsArray->arrayOfBits[bitsArray->countBits/8].elements.bit3=convertedBit;bitsArray->countBits++;break;
-		case 7:
+		case 6:
 			bitsArray->arrayOfBits[bitsArray->countBits/8].elements.bit2=convertedBit;bitsArray->countBits++;break;
-	}
+		case 7:
+			bitsArray->arrayOfBits[bitsArray->countBits/8].elements.bit1=convertedBit;bitsArray->countBits++;break;
+		}
 	}
 	else
 	{
@@ -76,8 +77,10 @@ int addBit (char bit, bits *bitsArray)
 		}
 		free(bitsArray->arrayOfBits);
 		bitsArray->arrayOfBits=newBlock;
+		if(bitsArray->countBits==0)
+			bitsArray->arrayOfBits[0].block=0;
 		bitsArray->countBits++;
-		bitsArray->arrayOfBits[bitsArray->countBits/8].elements.bit1=convertedBit;
+		bitsArray->arrayOfBits[bitsArray->countBits/8].elements.bit8=convertedBit;
 	}
 	return 1;
 }
@@ -94,76 +97,85 @@ char getBit(int number, bits bitsArray)
 		return '\0';
 	switch (residue)
 	{
-		
-	    case 0:
-			if(bitsArray.arrayOfBits[index].elements.bit8)
-				return '1';
-			else
-			{
-				return '0';
-			}
-		case 1:
-			if(bitsArray.arrayOfBits[index].elements.bit1)
-				return '1';
-			else
-			{
-				return '0';
-			}
-		case 2:
-			if(bitsArray.arrayOfBits[index].elements.bit2)
-				return '1';
-			else
-			{
-				return '0';
-			}
-		case 3:
-			if(bitsArray.arrayOfBits[index].elements.bit3)
-				return '1';
-			else
-			{
-				return '0';
-			}
-		case 4:
-			if(bitsArray.arrayOfBits[index].elements.bit4)
-				return '1';
-			else
-			{
-				return '0';
-			}
-		case 5:
-			if(bitsArray.arrayOfBits[index].elements.bit5)
-				return '1';
-			else
-			{
-				return '0';
-			}
-		case 6:
-			if(bitsArray.arrayOfBits[index].elements.bit6)
-				return '1';
-			else
-			{
-				return '0';
-			}
-		case 7:
-			if(bitsArray.arrayOfBits[index].elements.bit7)
-				return '1';
-			else
-			{
-				return '0';
-			}
-		default: return '\0';
-}
+
+	case 0:
+		if(bitsArray.arrayOfBits[index-1].elements.bit1)
+			return '1';
+		else
+		{
+			return '0';
+		}
+	case 1:
+		if(bitsArray.arrayOfBits[index].elements.bit8)
+			return '1';
+		else
+		{
+			return '0';
+		}
+	case 2:
+		if(bitsArray.arrayOfBits[index].elements.bit7)
+			return '1';
+		else
+		{
+			return '0';
+		}
+	case 3:
+		if(bitsArray.arrayOfBits[index].elements.bit6)
+			return '1';
+		else
+		{
+			return '0';
+		}
+	case 4:
+		if(bitsArray.arrayOfBits[index].elements.bit5)
+			return '1';
+		else
+		{
+			return '0';
+		}
+	case 5:
+		if(bitsArray.arrayOfBits[index].elements.bit4)
+			return '1';
+		else
+		{
+			return '0';
+		}
+	case 6:
+		if(bitsArray.arrayOfBits[index].elements.bit3)
+			return '1';
+		else
+		{
+			return '0';
+		}
+	case 7:
+		if(bitsArray.arrayOfBits[index].elements.bit2)
+			return '1';
+		else
+		{
+			return '0';
+		}
+	default: return '\0';
+	}
 }
 
 void catBinArr(bits* bitsArrayOne, bits* bitsArrayTwo)
 {
 	int i;
 	char bit;
-	if((bitsArrayOne!=NULL)&&(bitsArrayTwo!=NULL))
-	for(i=0;i<bitsArrayTwo->countBits;i++)
+	if(bitsArrayTwo!=NULL)
 	{
-		bit=getBit(i+1,*bitsArrayTwo);
-		addBit(bit,bitsArrayOne);
+		if(bitsArrayOne==NULL)
+		{
+			bitsArrayOne=bitsArrayTwo;
+		}
+		else
+		{
+			for(i=0;i<bitsArrayTwo->countBits;i++)
+			{
+				bit=getBit(i+1,*bitsArrayTwo);
+				addBit(bit,bitsArrayOne);
+			}
+		}
 	}
 }
 

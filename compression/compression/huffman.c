@@ -1,6 +1,7 @@
 #include <string.h>
 #include "huffman.h"
 #define DICTIONARY_LENGTH 256
+#define SIZE_OF_LENGTH_DICTIONARY 4 
 
 int compare(const void * x1, const void * x2)
 {
@@ -102,7 +103,7 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 		free(dictionaryOfBits);
 		return complete;
 	}
-	fwrite(&length,4,1,out);
+	fwrite(&length,SIZE_OF_LENGTH_DICTIONARY,1,out);
 	countOfWrite=fwrite(dictionary,sizeof(dictionaryElem),length,out);
 	if((countOfWrite!=length)||ferror(out))
 	{
@@ -150,22 +151,181 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 				}
 			}
 		}
-		if(buffOfBits.countBits!=0)
+		if((feof(in))&&(buffOfBits.countBits!=0))
 		{
 			fwrite(buffOfBits.arrayOfBits,sizeof(blockOfBits),(buffOfBits.countBits/8)+((buffOfBits.countBits%8)!=0?1:0),out);
-					if(ferror(out))
-						return write_error;
+			if(ferror(out))
+				return write_error;
 			buffOfBits.countBits=0;
 			free(buffOfBits.arrayOfBits);
 			buffOfBits.arrayOfBits=NULL;
 		}
 	}
-
 	destroyTree(&root);
 	free(memoryBlockForDictionary);
 	free(buff);
 	free(dictionaryOfBits);
 	return complete;
+}
+
+returnCode huffman_decode(FILE *in,FILE *out)
+{
+	int i;
+	int fillingOfBuffer=0;
+	int len;
+	int countOfRead;
+	char* buffOfWrite;
+	char bit;
+	bits buffOfRead;
+	dictionaryElem* dictionary;
+	node* nextNode;
+	node* root;
+	if(in==NULL)
+		return read_error;
+	if(out==NULL)
+		return write_error;
+	fread(&len,SIZE_OF_LENGTH_DICTIONARY,1,in);
+	if(ferror(in))
+	{return read_error;}
+	dictionary=(dictionaryElem*)malloc(sizeof(dictionaryElem)*len);
+	if(dictionary==NULL)
+	{
+		return not_enough_memory;
+	}
+	countOfRead=fread(dictionary,sizeof(dictionaryElem),len,in);
+
+	if ((countOfRead!=len)||(ferror(in)))
+	{
+		free(dictionary);
+		return read_error;
+	}
+	root=createTree(dictionary,len);
+	nextNode = root; 
+	if (root==NULL)
+	{
+		free(dictionary);
+		return not_enough_memory;
+	}
+	buffOfWrite=(char*)malloc(sizeof(char)*BUFSIZ);
+	if(buffOfWrite==NULL)
+	{
+		free(dictionary);
+		destroyTree(&root);
+		return not_enough_memory;
+	}
+	buffOfRead.arrayOfBits=(blockOfBits*)malloc(sizeof(blockOfBits)*BUFSIZ);
+	if(buffOfRead.arrayOfBits==NULL)
+	{
+		free(buffOfWrite);
+		free(dictionary);
+		destroyTree(&root);
+		return not_enough_memory;
+	}
+	while (!feof(in))
+	{
+		countOfRead=fread(buffOfRead.arrayOfBits,sizeof(blockOfBits),BUFSIZ,in);
+		buffOfRead.countBits=countOfRead*8;
+		for(i=0;i<buffOfRead.countBits;i++)
+		{
+			bit=getBit(i+1,buffOfRead);
+			if(bit=='1')
+			{
+				if(nextNode->one!=NULL)
+				{
+					nextNode=nextNode->one;
+					continue;
+				}
+				else
+				{
+					if((nextNode->zero==NULL))
+					{
+						buffOfWrite[fillingOfBuffer]=nextNode->charater;
+						fillingOfBuffer++;	
+						nextNode=root;
+						if(fillingOfBuffer==BUFSIZ)
+						{
+							fwrite(buffOfWrite,sizeof(char),BUFSIZ,out);
+							fillingOfBuffer=0;
+							if(ferror(in))
+							{
+								free(buffOfRead.arrayOfBits);
+								free(buffOfWrite);
+								free(dictionary);
+								destroyTree(&root);
+								return write_error;
+							}
+						}
+					}
+					else
+					{
+						free(buffOfRead.arrayOfBits);
+						free(buffOfWrite);
+						free(dictionary);
+						destroyTree(&root);
+						return read_error;
+					}
+				}
+			}
+			if(bit=='0')
+			{
+				if((nextNode->zero!=NULL))
+				{
+					nextNode=nextNode->zero;
+					continue;
+				}
+				else
+				{
+					if(nextNode->one==NULL)
+					{
+						buffOfWrite[fillingOfBuffer]=nextNode->charater;
+						fillingOfBuffer++;	
+						nextNode=root;
+						if(fillingOfBuffer==BUFSIZ)
+						{
+							fwrite(buffOfWrite,sizeof(char),BUFSIZ,out);
+							fillingOfBuffer=0;
+							if(ferror(in))
+							{
+								free(buffOfRead.arrayOfBits);
+								free(buffOfWrite);
+								free(dictionary);
+								destroyTree(&root);
+								return write_error;
+							}
+						}
+					}
+					else
+					{
+						free(buffOfRead.arrayOfBits);
+						free(buffOfWrite);
+						free(dictionary);
+						destroyTree(&root);
+						return read_error;
+					}
+				}
+			}
+		}
+		if((fillingOfBuffer>0)&&(feof(in)))
+		{
+			fwrite(buffOfWrite,sizeof(char),fillingOfBuffer,out);
+			fillingOfBuffer=0;
+			if(ferror(in))
+			{
+				free(buffOfRead.arrayOfBits);
+				free(buffOfWrite);
+				free(dictionary);
+				destroyTree(&root);
+				return write_error;
+			}
+		}
+	}
+	free(buffOfRead.arrayOfBits);
+	free(buffOfWrite);
+	free(dictionary);
+	destroyTree(&root);
+
+	return complete;
+
 }
 
 node* createTree(dictionaryElem* dictionary, int length)
@@ -221,15 +381,15 @@ void destroyTree(node** root)
 {
 	if(root!=NULL)
 	{
-	if(root[0]->one!=NULL)
-	{
-		destroyTree(&root[0]->one);
-	}
-	if(root[0]->zero!=NULL)
-	{
-		destroyTree(&root[0]->zero);
-	}
-	free(root[0]);
+		if(root[0]->one!=NULL)
+		{
+			destroyTree(&root[0]->one);
+		}
+		if(root[0]->zero!=NULL)
+		{
+			destroyTree(&root[0]->zero);
+		}
+		free(root[0]);
 	}
 }
 
@@ -239,18 +399,18 @@ void createDictionaryOfBits(node* root,char* code,dictionaryOfBitsElem* dictiona
 	{
 		dictionaryOfBits[*length].elem=root->charater;
 		dictionaryOfBits[*length].code=stringToBits(code);
-	(*length)++;
+		(*length)++;
 	}
-if(root->zero!= NULL){
-    char temp[256];
-    strcpy(temp, code);
-    strcat(temp, "0");
-	createDictionaryOfBits(root->zero, temp,dictionaryOfBits,length);
-}
-if(root->one!= NULL){
-    char temp[256];
-    strcpy(temp, code);
-    strcat(temp, "1");
-	createDictionaryOfBits(root->one,temp ,dictionaryOfBits,length);
-}
+	if(root->zero!= NULL){
+		char temp[256];
+		strcpy(temp, code);
+		strcat(temp, "0");
+		createDictionaryOfBits(root->zero, temp,dictionaryOfBits,length);
+	}
+	if(root->one!= NULL){
+		char temp[256];
+		strcpy(temp, code);
+		strcat(temp, "1");
+		createDictionaryOfBits(root->one,temp ,dictionaryOfBits,length);
+	}
 }

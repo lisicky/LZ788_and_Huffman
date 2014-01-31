@@ -15,6 +15,9 @@ int main(int argc, char* argv[])
 	i=huffman_encode(in,out);
 	fclose(in);
 	fclose(out);
+	in=fopen("C:\\Users\\God\\Desktop\\yyy1.huff", "rb");
+	out=fopen("C:\\Users\\God\\Desktop\\yyyHUFF.bmp", "wb");
+	i=huffman_decode(in,out);
 	return 0;
 }
 
