@@ -194,12 +194,12 @@ int main(int argc, char* argv[])
 	lzSise=fileStat.st_size;
 	stat(nameCompressedFileHUFF,&fileStat);
 	huffSize=fileStat.st_size;
-	printf("\n------------------------------------------------\nFlename: %s\n------------------------------------------------",argv[i]);
+	printf("\n------------------------------------------------\nFilename: %s\n------------------------------------------------",argv[i]);
 	printf("\nSize:%d\n------------------------------------------------",fileSize);
 	ratio=(double)fileSize/lzSise;
-	printf("\nLZ78 code:\n\tEncode time: %f\n\tDecode time: %fsecond\n\tCompression ratio: %fsecond\n\tSize: %d\n",timeLZEncode,timeLZDecode,ratio,lzSise);
+	printf("\nLZ78 code:\n\tEncode time: %f second\n\tDecode time: %f second\n\tCompression ratio: %f\n\tSize: %d\n",timeLZEncode,timeLZDecode,ratio,lzSise);
 	ratio=(double)fileSize/huffSize;
-	printf("\nHuffman code:\n\tEncode time: %f\n\tDecode time: %fsecond\n\tCompression ratio: %fsecond\n\tSize: %d\n",timeHuffEncode,timeHuffDecode,ratio,huffSize);
+	printf("\nHuffman code:\n\tEncode time: %f second\n\tDecode time: %f second\n\tCompression ratio: %f\n\tSize: %d\n",timeHuffEncode,timeHuffDecode,ratio,huffSize);
 	}
 	return 0;
 }
