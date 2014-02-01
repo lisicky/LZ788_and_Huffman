@@ -18,22 +18,22 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="compression.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="lz.c">
-	 <Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="huffman.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="binaryOperation.c">
-	<Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="compression.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lz.h">
-	 <Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="huffman.h">
       <Filter>Header Files</Filter>

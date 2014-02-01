@@ -1,6 +1,7 @@
 #include <stdio.h>
 #ifndef LZ_H
 #define LZ_H
+#ifndef HUFFMAN_H
 typedef enum returnCode
 {
 	complete,
@@ -8,6 +9,7 @@ typedef enum returnCode
 	write_error,
 	not_enough_memory
 }returnCode;
+#endif
 #pragma pack(push,1)
 typedef struct dictionaryElem
 {

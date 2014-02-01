@@ -81,9 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="binaryOperation.c" />
-    <ClCompile Include="compression.cpp" />
+    <ClCompile Include="compression.c" />
     <ClCompile Include="lz.c" />
-	  <ClCompile Include="huffman.c" />
+    <ClCompile Include="huffman.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lz.h" />

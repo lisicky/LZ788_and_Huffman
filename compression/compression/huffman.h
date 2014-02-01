@@ -3,6 +3,7 @@
 #include "binaryOperation.h"
 #ifndef HUFFMAN_H
 #define HUFFMAN_H
+#ifndef LZ_H
 typedef enum returnCode
 {
 	complete,
@@ -10,12 +11,13 @@ typedef enum returnCode
 	write_error,
 	not_enough_memory
 }returnCode;
+#endif
 
-typedef struct dictionaryElem
+typedef struct dictionaryElemH
 {
 	int probability;
 	char elem;
-}dictionaryElem;
+}dictionaryElemH;
 
 typedef struct Node
 {
@@ -29,5 +31,5 @@ returnCode huffman_encode(FILE *in ,FILE *out);
 returnCode huffman_decode(FILE *in,FILE *out);
 void destroyTree(node** root);
 void createDictionaryOfBits(node* root,char* code,dictionaryOfBitsElem* dictionaryOfBits, int* length);
-node* createTree(dictionaryElem* dictionaty, int length);
+node* createTree(dictionaryElemH* dictionaty, int length);
 #endif

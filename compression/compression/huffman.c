@@ -5,7 +5,7 @@
 
 int compare(const void * x1, const void * x2)
 {
-	return((*(dictionaryElem*)x1).probability-(*(dictionaryElem*)x2).probability);
+	return((*(dictionaryElemH*)x1).probability-(*(dictionaryElemH*)x2).probability);
 }
 
 int compareNode(const void * x1, const void * x2)
@@ -26,7 +26,7 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 	bits buffOfBits;
 	bits* binCode;
 	bits residueBinCode;
-	dictionaryElem *dictionary, *memoryBlockForDictionary;
+	dictionaryElemH *dictionary, *memoryBlockForDictionary;
 	dictionaryOfBitsElem* dictionaryOfBits;
 	node* root;
 	if(in==NULL)
@@ -36,7 +36,7 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 	buff=(char*)malloc(sizeof(char)*BUFSIZ);
 	if(buff==NULL)
 		return not_enough_memory;
-	memoryBlockForDictionary=(dictionaryElem*)malloc(sizeof(dictionaryElem)*length);
+	memoryBlockForDictionary=(dictionaryElemH*)malloc(sizeof(dictionaryElemH)*length);
 	dictionary=memoryBlockForDictionary;
 	if(dictionary==NULL)
 	{
@@ -64,7 +64,7 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 		}
 	}
 	fseek(in,oldPosition,SEEK_SET);
-	qsort(dictionary,length,sizeof(dictionaryElem),compare);
+	qsort(dictionary,length,sizeof(dictionaryElemH),compare);
 	j=0;
 	for(i=0;i<length;i++)
 	{
@@ -107,7 +107,7 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 		return complete;
 	}
 	fwrite(&length,SIZE_OF_LENGTH_DICTIONARY,1,out);
-	countOfWrite=fwrite(dictionary,sizeof(dictionaryElem),length,out);
+	countOfWrite=fwrite(dictionary,sizeof(dictionaryElemH),length,out);
 	if((countOfWrite!=length)||ferror(out))
 	{
 		destroyTree(&root);
@@ -181,7 +181,7 @@ returnCode huffman_decode(FILE *in,FILE *out)
 	char* buffOfWrite;
 	char bit;
 	bits buffOfRead;
-	dictionaryElem* dictionary;
+	dictionaryElemH* dictionary;
 	node* nextNode;
 	node* root;
 	if(in==NULL)
@@ -191,12 +191,12 @@ returnCode huffman_decode(FILE *in,FILE *out)
 	fread(&len,SIZE_OF_LENGTH_DICTIONARY,1,in);
 	if(ferror(in))
 	{return read_error;}
-	dictionary=(dictionaryElem*)malloc(sizeof(dictionaryElem)*len);
+	dictionary=(dictionaryElemH*)malloc(sizeof(dictionaryElemH)*len);
 	if(dictionary==NULL)
 	{
 		return not_enough_memory;
 	}
-	countOfRead=fread(dictionary,sizeof(dictionaryElem),len,in);
+	countOfRead=fread(dictionary,sizeof(dictionaryElemH),len,in);
 
 	if ((countOfRead!=len)||(ferror(in)))
 	{
@@ -338,7 +338,7 @@ returnCode huffman_decode(FILE *in,FILE *out)
 
 }
 
-node* createTree(dictionaryElem* dictionary, int length)
+node* createTree(dictionaryElemH* dictionary, int length)
 {
 	int i,j;
 	node* newNode;
