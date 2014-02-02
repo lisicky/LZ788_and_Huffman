@@ -127,9 +127,9 @@ returnCode huffman_encode(FILE *in ,FILE *out)
 		{
 			binCode=findCode(buff[i],dictionaryOfBits,lengthOfBinaryDictionary);
 			catBinArr(&buffOfBits,binCode);
-			if((buffOfBits.countBits/8)>=BUFSIZ)
+			if(buffOfBits.countBits>=(BUFSIZ*8))
 			{
-				if((buffOfBits.countBits/8)>BUFSIZ)
+				if(buffOfBits.countBits>(BUFSIZ*8))
 				{
 					residueBinCode=cutAndGetResidue(&buffOfBits,BUFSIZ);
 					fwrite(buffOfBits.arrayOfBits,sizeof(blockOfBits),BUFSIZ,out);
@@ -231,7 +231,27 @@ returnCode huffman_decode(FILE *in,FILE *out)
 		buffOfRead.countBits=countOfRead*8;
 		for(i=0;i<buffOfRead.countBits;i++)
 		{
-			bit=getBit(i+1,buffOfRead);
+		    bit=getBit(i+1,buffOfRead);
+			if((nextNode->zero==NULL)&&(nextNode->one==NULL))
+			{
+				buffOfWrite[fillingOfBuffer]=nextNode->charater;
+				fillingOfBuffer++;	
+				nextNode=root;
+				if(fillingOfBuffer==BUFSIZ)
+				{
+					fwrite(buffOfWrite,sizeof(char),BUFSIZ,out);
+					fillingOfBuffer=0;
+					if(ferror(in))
+					{
+						free(buffOfRead.arrayOfBits);
+						free(buffOfWrite);
+						free(dictionary);
+						destroyTree(&root);
+						return write_error;
+					}
+				}
+			}
+
 			if(bit=='1')
 			{
 				if((nextNode->one!=NULL)&&(nextNode->zero!=NULL))
@@ -241,36 +261,13 @@ returnCode huffman_decode(FILE *in,FILE *out)
 				}
 				else
 				{
-					if((nextNode->zero==NULL)&&(nextNode->one==NULL))
-					{
-						buffOfWrite[fillingOfBuffer]=nextNode->charater;
-						fillingOfBuffer++;	
-						nextNode=root;
-						i--;
-						if(fillingOfBuffer==BUFSIZ)
-						{
-							fwrite(buffOfWrite,sizeof(char),BUFSIZ,out);
-							fillingOfBuffer=0;
-							if(ferror(in))
-							{
-								free(buffOfRead.arrayOfBits);
-								free(buffOfWrite);
-								free(dictionary);
-								destroyTree(&root);
-								return write_error;
-							}
-						}
-					}
-					else
-					{
-						if(feof(in))
-							break;
-						free(buffOfRead.arrayOfBits);
-						free(buffOfWrite);
-						free(dictionary);
-						destroyTree(&root);
-						return read_error;
-					}
+					if(feof(in))
+						break;
+					free(buffOfRead.arrayOfBits);
+					free(buffOfWrite);
+					free(dictionary);
+					destroyTree(&root);
+					return read_error;
 				}
 			}
 			if(bit=='0')
@@ -282,53 +279,30 @@ returnCode huffman_decode(FILE *in,FILE *out)
 				}
 				else
 				{
-					if((nextNode->zero==NULL)&&(nextNode->one==NULL))
-					{
-						buffOfWrite[fillingOfBuffer]=nextNode->charater;
-						fillingOfBuffer++;	
-						nextNode=root;
-						i--;
-						if(fillingOfBuffer==BUFSIZ)
-						{
-							fwrite(buffOfWrite,sizeof(char),BUFSIZ,out);
-							fillingOfBuffer=0;
-							if(ferror(in))
-							{
-								free(buffOfRead.arrayOfBits);
-								free(buffOfWrite);
-								free(dictionary);
-								destroyTree(&root);
-								return write_error;
-							}
-						}
-					}
-					else
-					{
-						if(feof(in))
-							break;
-						free(buffOfRead.arrayOfBits);
-						free(buffOfWrite);
-						free(dictionary);
-						destroyTree(&root);
-						return read_error;
-					}
+					if(feof(in))
+						break;
+					free(buffOfRead.arrayOfBits);
+					free(buffOfWrite);
+					free(dictionary);
+					destroyTree(&root);
+					return read_error;
 				}
 			}
 		}
 	}
-		if((fillingOfBuffer>0)&&(feof(in)))
+	if((fillingOfBuffer>0)&&(feof(in)))
+	{
+		fwrite(buffOfWrite,sizeof(char),fillingOfBuffer,out);
+		fillingOfBuffer=0;
+		if(ferror(in))
 		{
-			fwrite(buffOfWrite,sizeof(char),fillingOfBuffer,out);
-			fillingOfBuffer=0;
-			if(ferror(in))
-			{
-				free(buffOfRead.arrayOfBits);
-				free(buffOfWrite);
-				free(dictionary);
-				destroyTree(&root);
-				return write_error;
-			}
+			free(buffOfRead.arrayOfBits);
+			free(buffOfWrite);
+			free(dictionary);
+			destroyTree(&root);
+			return write_error;
 		}
+	}
 	free(buffOfRead.arrayOfBits);
 	free(buffOfWrite);
 	free(dictionary);

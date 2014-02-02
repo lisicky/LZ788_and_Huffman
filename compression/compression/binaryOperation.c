@@ -195,8 +195,7 @@ bits cutAndGetResidue(bits* arrayOfBits, int countByteToCut)
 	arrayOfBitsReside.arrayOfBits=(blockOfBits*)malloc(sizeof(blockOfBits)*((len/8)+1));
 	if(arrayOfBitsReside.arrayOfBits==NULL)
 		return arrayOfBitsReside;
-	arrayOfBitsReside.countBits=len;
-	for(i=arrayOfBits->countBits-len+8;i<=arrayOfBits->countBits;i++)
+	for(i=arrayOfBits->countBits-len+1;i<=arrayOfBits->countBits;i++)
 	{
 		bit=getBit(i,*arrayOfBits);
 		addBit(bit,&arrayOfBitsReside);
